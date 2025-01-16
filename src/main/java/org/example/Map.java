@@ -8,20 +8,21 @@ public class Map {
     int columns;
 
 
-    public Map (int rows, int columns) {
+    public Map (int rows, int columns, int numberOfMines) {
         this.rows = rows;
         this.columns = columns;
         this.board = new Tile[rows][columns];
-        this.board[0][0] = new Tile(true);
+//        this.board[0][0] = new Tile(true);
 
-        //fill rest of the tiles with non mine tiles
+        // Initialize all tiles as regular (non-mine)
         for (int i = 0; i < rows; i++ ) {
             for (int j = 0; j < columns; j++ ){
-                if (board[i][j] == null) {
-                    board[i][j] = new Tile(false);
-                }
+                board[i][j] = new Tile();
             }
         }
+
+        placeRandomMines(numberOfMines);
+
     }
 
     public void placeRandomMines(int numberOfMines) {
@@ -82,6 +83,21 @@ public class Map {
         }
 
     }
+
+    //test method to see the unrevealed board before game starts
+    public void printFullBoard() {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                if (board[i][j].isMine) {
+                    System.out.print("M ");  // M represents a mine
+                } else {
+                    System.out.print("0 ");  // 0 represents a non-mine cell
+                }
+            }
+            System.out.println();
+        }
+    }
+
 
 
 

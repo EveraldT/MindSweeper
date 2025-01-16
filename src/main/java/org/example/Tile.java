@@ -3,9 +3,10 @@ package org.example;
 public class Tile {
     boolean isRevealed;
     boolean isMine;
+    public int adjacentMines;
 
     //Constructor
-    public Tile(boolean isMine) {
+    public Tile() {
         this.isMine = isMine;
         this.isRevealed = false;
     }

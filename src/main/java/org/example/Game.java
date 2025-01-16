@@ -6,13 +6,29 @@ public class Game {
     public Map gameBoard;
     public boolean isGameOver;
 
+    private static final int ROWS = 6;
+    private static final int COLUMNS = 6;
+
     public Game() {
-        gameBoard = new Map(6, 6);
+
+        int numberOfMines = calculateMaxMines(ROWS, COLUMNS);
+        gameBoard = new Map(ROWS, COLUMNS, numberOfMines );
         isGameOver = false;
+
+    }
+
+        public int calculateMaxMines(int rows, int columns) {
+        int totalTiles = rows * columns;
+        //20% of total tiles set to mines, and capped to min 3
+        int maxMines = Math.max(3,(int) (totalTiles * 0.2));
+        //edge case for avoiding filled board with mines
+        return Math.min(maxMines, totalTiles - 1);
         }
+
 
     public void startGame() {
         Scanner scanner = new Scanner(System.in);
+        gameBoard.printFullBoard();
 
     //Start game loop
         while (!isGameOver) {

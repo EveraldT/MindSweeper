@@ -10,7 +10,7 @@ public class Tile {
         this.isRevealed = false;
     }
     //method for changing tile to revealed
-    public void revealed() {
+    public void revealTile() {
         this.isRevealed = true;
     }
 

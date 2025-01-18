@@ -153,7 +153,10 @@ public class Map {
             for (int j = 0; j < columns; j++) {
                 Tile currentTile = board[i][j];
                 String display;
-                if (currentTile.isRevealed) {
+
+                if(currentTile.isFlagged) {
+                    display = "F";
+                } else if (currentTile.isRevealed) {
                     if (currentTile.isMine) {
                         display = "M";
                     } else {

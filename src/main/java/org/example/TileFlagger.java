@@ -1,6 +1,7 @@
 package org.example;
 
 public class TileFlagger {
+
     public void toggleFlag(Map gameBoard, int row, int col){
         Tile tile = gameBoard.board[row][col];
         if (!tile.isRevealed) {

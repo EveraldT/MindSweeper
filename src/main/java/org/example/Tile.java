@@ -7,7 +7,7 @@ public class Tile {
     public int adjacentMines;
 
 
-    //Constructor
+    //Constructor for tile, starts as unrevealed and unflagged
     public Tile() {
         this.isMine = isMine;
         this.isRevealed = false;

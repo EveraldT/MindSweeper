@@ -3,6 +3,7 @@ package org.example;
 import java.util.Random;
 
 public class Map {
+    int numberOfMines;
     Tile[][] board;
     int rows;
     int columns;
@@ -10,6 +11,7 @@ public class Map {
     public Map (int rows, int columns, int numberOfMines) {
         this.rows = rows;
         this.columns = columns;
+        this.numberOfMines = numberOfMines;
         this.board = new Tile[rows][columns];
 
         // Initialize all tiles as regular (non-mine)
@@ -43,6 +45,49 @@ public class Map {
         }
 
     }
+
+    public void relocateMine(int firstRow, int firstColumn) {
+        Random random = new Random();
+        //first position mine deleted
+        board[firstRow][firstColumn].isMine = false;
+
+        while (true) {
+            int newRow = random.nextInt(rows);
+            int newColumn = random.nextInt(columns);
+
+            Tile newTile = board[newRow][newColumn];
+
+            //if statement to stop the new mine from being relocated to a tile that is a mine and a tile that is unrevealed
+            if (!newTile.isMine && !newTile.isRevealed) {
+                newTile.isMine = true;
+                break;
+
+            }
+
+        }
+
+
+    }
+
+    public int getNumberOfMines() {
+        return numberOfMines;
+    }
+
+    //loop through all columns and rows on the board if the tile boolean for isRevealed is true increment counter to get total revealed tiles count
+    public int revealedTilesCount() {
+        int revealedCount = 0;
+
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < columns; j++) {
+                if (board[i][j].isRevealed) {
+                    revealedCount++;
+                }
+            }
+        }
+        return revealedCount;
+    }
+
+
 
     //REQUIRES REVIEW AND READ OVER NOT FINAL METHOD!
     public void calculateAdjacentMines() {
@@ -171,7 +216,7 @@ public class Map {
         }
     }
 
-    //test method to see the unrevealed board before game starts
+    //test method to see all mines on the board before game starts
     public void printFullBoard() {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
@@ -186,24 +231,18 @@ public class Map {
     }
 
     public void revealAllTilesForTesting() {
-        // Store the current state of each tile
-        boolean[][] previousStates = new boolean[rows][columns];
-
-        // Reveal all tiles and store their current revealed state
+        // Temporarily reveal all tiles
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                previousStates[i][j] = board[i][j].isRevealed(); // Store current state
-                board[i][j].revealTile();                        // Temporarily reveal the tile
+                board[i][j].isRevealed = true; // Reveal each tile
             }
         }
-        // Print the board with all tiles revealed
+        // Print the board
         printBoard();
-        // Restore the previous state of each tile
+        // Hide all tiles again
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
-                if (!previousStates[i][j]) {
-                    board[i][j].isRevealed = false; // Hide the tile again if it wasn't already revealed
-                }
+                board[i][j].isRevealed = false; // Re-hide each tile
             }
         }
     }

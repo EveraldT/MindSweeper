@@ -5,7 +5,12 @@ package org.example;
 public class Main {
     public static void main(String[] args) {
 
-        Game game = new Game(9 ,9);
+        UserInput userInput = new UserInput();
+        int mapSize = userInput.getMapSize();
+        int difficulty = userInput.getDifficulty();
+
+
+        Game game = new Game(mapSize, difficulty);
         game.startGame();
         }
     }

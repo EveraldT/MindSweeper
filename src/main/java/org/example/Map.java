@@ -66,7 +66,6 @@ public class Map {
 
         }
 
-
     }
 
     public int getNumberOfMines() {
@@ -95,7 +94,7 @@ public class Map {
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
                 if (board[i][j].isMine) {
-                    // If the tile is a mine, we don't need to calculate anything for it
+                    // If the tile is a mine don't calculate anything for it
                     continue;
                 }
                 // Check surrounding tiles for mines
@@ -122,7 +121,7 @@ public class Map {
     }
 
     //now recursive REQUIRES REVIEW AND READ OVER NOT FINAL METHOD!
-    public void revealTile(int row, int col) {
+    public void revealTiles(int row, int col) {
 
         // base case end the recursion if is out of bounds
         if (row < 0 || row >= rows || col < 0 || col >= columns) {
@@ -150,51 +149,27 @@ public class Map {
                 }
                 int newRow = row + x;
                 int newCol = col + y;
-                revealTile(newRow, newCol); // Recursively reveal neighboring tiles
+                revealTiles(newRow, newCol); // Recursively reveal neighboring tiles
             }
         }
 
-
-    }
-
-    public void printBoardold(){
-        for(int i = 0; i < rows; i++ ){
-            for(int j = 0; j < columns; j++){
-                Tile currentTile = board[i][j];
-                String tileState;
-                if (currentTile.isRevealed){
-                    if (currentTile.isMine) {
-                        tileState = "M";
-                    } else {
-                        tileState = "0";
-                    }
-                } else {
-                    tileState = "#";
-                }
-
-                switch (tileState) {
-                        case "M":
-                            System.out.print("M ");
-                            break;
-                        case "0":
-                            System.out.print("0 ");
-                            break;
-                    case "#":
-                        System.out.print("# ");
-                        break;
-                    default:
-                        System.out.print("?");
-
-                }
-            }
-            //Line Break
-            System.out.println();
-        }
 
     }
 
     public void printBoard() {
+
+        System.out.print("   "); // Space for row numbers alignment
+// Print column numbers (1-based indexing for user-friendliness)
+        for (int col = 0; col < columns; col++) {
+            System.out.print((col + 1) + " ");
+        }
+        System.out.println(); // Move to the next line
+
+
+
+
         for (int i = 0; i < rows; i++) {
+            System.out.printf("%2d ", (i + 1)); // Print row number (1-based)
             for (int j = 0; j < columns; j++) {
                 Tile currentTile = board[i][j];
                 String display;

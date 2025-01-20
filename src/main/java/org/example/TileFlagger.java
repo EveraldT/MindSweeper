@@ -10,7 +10,8 @@ public class TileFlagger {
             System.out.println(tile.isFlagged ? "Flagged" : "Unflagged");
         } else {
             System.out.println("Cannot flag a revealed tile!");
-
         }
     }
+
+    //add function for validation checks so a flag tile cant be revealed etc.
 }

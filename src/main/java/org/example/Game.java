@@ -1,6 +1,8 @@
 package org.example;
 
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class Game {
     public Map gameBoard;
@@ -18,38 +20,47 @@ public class Game {
 //        isGameOver = false;
 //    }
 
-    public Game(int rows, int columns){
-        this.gameBoard = new Map(rows, columns, calculateMaxMines(rows, columns));
+    public Game(int mapSize, int difficulty){
+        this.gameBoard = new Map(mapSize, mapSize, calculateMaxMines(difficulty, mapSize));
         this.userInput = new UserInput();
         this.tileFlagger = new TileFlagger();
         this.isGameOver = false;
         this.isFirstMove = true; //initialise as true
     }
 
-//    public void buildGame(int totalMines) {
-//        gameBoard.placeRandomMines(totalMines);
-//        gameBoard.calculateAdjacentMines();
-//    }
+        public int calculateMaxMines(int difficulty, int mapSize) {
+        int totalTiles = mapSize * mapSize;
 
-        public int calculateMaxMines(int rows, int columns) {
-        int totalTiles = rows * columns;
+            switch (difficulty) {
+                case 1: // Easy
+                    return (int) (totalTiles * 0.1); // 10% mines
+                case 2: // Intermediate
+                    return (int) (totalTiles * 0.15); // 15% mines
+                case 3: // Hard
+                    return (int) (totalTiles * 0.2); // 20% mines
+                default:
+                    return (int) (totalTiles * 0.1); // Default to 10% for Easy
+            }
             //20% of total tiles set to mines, and capped to min 3 by comparing
             //max mines variable declared using math max function to compare value of 20% of total tiles and another value used as a cap
-            int maxMines = Math.max(3,(int) (totalTiles * 0.2));
-            int testMineAmount = 1;
-            return maxMines;
+//            int maxMines = Math.max(3,(int) (totalTiles * 0.2));
+//            int testMineAmount = 1;
+//            return maxMines;
         }
-
 
         public void startGame() {
         Scanner scanner = new Scanner(System.in);
         gameBoard.revealAllTilesForTesting();
-            System.out.println("Number of Mines: " + gameBoard.getNumberOfMines());
+        System.out.println("Number of Mines: " + gameBoard.getNumberOfMines());
 
 
             //Start game loop
         while (!isGameOver) {
         gameBoard.printBoard();
+
+        GameTimer timer = new GameTimer();
+        timer.start();
+
 //            System.out.println("Choose row and column(FORMAT: 1,1)");
 //            String input = scanner.nextLine();
 //            instead of asking the user directly and taking in the input, the userinput class handles main menu
@@ -64,7 +75,7 @@ public class Game {
                     int column = position [1];
 
                     if (row < 0 || row >= gameBoard.rows || column < 0 || column >= gameBoard.columns) {
-                        System.out.println("Invalid position. Try again.");
+                        SystemMessages.invalidOption();
                         continue;
                     }
 
@@ -72,27 +83,39 @@ public class Game {
 
                     if (isFirstMove) {
                         if (tile.isMine) {
-                            System.out.println("MINE HIT ON FIRST TURN RELOCATING MINE POSITION ");
+                            SystemMessages.relocateMine();
                             gameBoard.relocateMine(row, column); // Remove and relocate the mine
                             gameBoard.calculateAdjacentMines(); // recalculate the adjacent mines after relocation
                         }
                         isFirstMove = false; // Mark the first move as completed
-                        System.out.println("TEST this is the new board:");
-                        gameBoard.revealAllTilesForTesting();
-                        System.out.println("Number of Mines: " + mineCount);
+//                        System.out.println("TEST this is the new board:");
+//                        gameBoard.revealAllTilesForTesting();
+//                        SystemMessages.numberOfMines(mineCount);
 
+                    }
+
+                    if (tile.isFlagged) {
+                        SystemMessages.flagTileReveal();
+                        continue;
+                    }
+
+                    if (tile.isRevealed) {
+                        SystemMessages.alreadyRevealed();
+                        continue;
                     }
 
 
                     if (tile.isMine) {
                         gameBoard.printFullBoard();
-                        System.out.println("GAME OVER");
+                        SystemMessages.gameOver();
+                        timer.stop();
                         isGameOver = true;
                     } else {
-                        gameBoard.revealTile(row, column);
-                        System.out.println("SAFE MOVE, continue");
-                        System.out.println("Number of Mines: " + mineCount);
-                        System.out.println("Number of revealed tiles: " + gameBoard.revealedTilesCount());
+                        gameBoard.revealTiles(row, column);
+                        int revealedTileCount = gameBoard.revealedTilesCount();
+                        SystemMessages.safeMove();
+                        SystemMessages.numberOfMines(mineCount);
+                        SystemMessages.revealedTilesAmount(revealedTileCount);
 
                     }
                     break;
@@ -103,7 +126,7 @@ public class Game {
                     int flagCol = flagPosition[1];
 
                     if (flagRow < 0 || flagRow >= gameBoard.rows || flagCol < 0 || flagCol >= gameBoard.columns) {
-                        System.out.println("Invalid position. Try again.");
+                        SystemMessages.invalidOption();
                         continue;
                     }
 
@@ -115,8 +138,12 @@ public class Game {
                     isGameOver = true;
                     break;
 
+                case 4:
+                    timer.checkTimer();
+                    break;
+
                 default:
-                    System.out.println("Invalid Option. Try Again");
+                    SystemMessages.invalidOption();
                     break;
 
             }
@@ -127,33 +154,33 @@ public class Game {
             //Win condition, get total safe tiles by calculating all tiles (by getting row*col) and substracting the mine count from it
             //and if the revealed tiles count is equal to the amount of total safe tiles that means the player has revealed all safe tiles and wins
             if (gameBoard.revealedTilesCount() == totalSafeTiles) {
-                System.out.println("YOU WIN! ALL MINES AVOIDED");
+                SystemMessages.winGame();
                 gameBoard.revealAllTilesForTesting();
                 isGameOver = true;
             }
 
-
-//            String[] parts = input.split(" ");
-//            int row = Integer.parseInt(parts[0]) - 1;
-//            int column = Integer.parseInt(parts[1]) - 1;
-//
-//            if (row < 0 || row >= gameBoard.rows || column < 0 || column >= gameBoard.columns ) {
-//                System.out.println("Invalid input, Enter valid row and column numbers.");
-//                continue;
-//            }
-//
-//            if (gameBoard.board[row][column].isMine) {
-//                gameBoard.printBoard();
-//                //change it so it prints out the board with the bomb showing
-//                System.out.println("GAME OVER!");
-//                isGameOver = true;
-//            } else {
-//                gameBoard.revealTile(row, column);
-//                System.out.println("Safe Move, Continue");
-//            }
     }
 
-//        scanner.close();
+    }
+
+    public void timerStart(){
+        Timer timer = new Timer();
+        long startTime = System.currentTimeMillis();
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                long elaspedTime = (System.currentTimeMillis() - startTime)/1000;
+                System.out.println("Elasped Time: " + elaspedTime);
+            }
+
+
+        };
+        timer.scheduleAtFixedRate(task, 1, 1000);
+        System.out.println(task);
+
+    }
+
+    public void checkTimer(Timer time) {
 
     }
 
